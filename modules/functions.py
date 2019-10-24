@@ -1,13 +1,23 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
+
+from constants import ROOT_DIR
 
 
 def choose_grid(nr):
     return nr // 4 + 1, 4
 
 
-def line_chart(ax: plt.Axes, series: pd.Series, title: str, xlabel: str, ylabel: str, percentage=False):
+def line_chart(
+    ax: plt.Axes,
+    series: pd.Series,
+    title: str,
+    xlabel: str,
+    ylabel: str,
+    percentage=False,
+):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -16,7 +26,15 @@ def line_chart(ax: plt.Axes, series: pd.Series, title: str, xlabel: str, ylabel:
     ax.plot(series)
 
 
-def multiple_line_chart(ax: plt.Axes, xvalues: list, yvalues: dict, title: str, xlabel: str, ylabel: str, percentage=False):
+def multiple_line_chart(
+    ax: plt.Axes,
+    xvalues: list,
+    yvalues: dict,
+    title: str,
+    xlabel: str,
+    ylabel: str,
+    percentage=False,
+):
     legend: list = []
     ax.set_title(title)
     ax.set_xlabel(xlabel)
@@ -27,27 +45,42 @@ def multiple_line_chart(ax: plt.Axes, xvalues: list, yvalues: dict, title: str, 
     for name, y in yvalues.items():
         ax.plot(xvalues, y)
         legend.append(name)
-    ax.legend(legend, loc='best', fancybox=True, shadow=True)
+    ax.legend(legend, loc="best", fancybox=True, shadow=True)
 
 
-def bar_chart(ax: plt.Axes, xvalues: list, yvalues: list, title: str, xlabel: str, ylabel: str, percentage=False):
+def bar_chart(
+    ax: plt.Axes,
+    xvalues: list,
+    yvalues: list,
+    title: str,
+    xlabel: str,
+    ylabel: str,
+    percentage=False,
+):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    ax.set_xticklabels(xvalues, rotation=90, fontsize='small')
+    ax.set_xticklabels(xvalues, rotation=90, fontsize="small")
     if percentage:
         ax.set_ylim(0.0, 1.0)
-    ax.bar(xvalues, yvalues, edgecolor='grey')
+    ax.bar(xvalues, yvalues, edgecolor="grey")
 
 
-def multiple_bar_chart(ax: plt.Axes, xvalues: list, yvalues: dict, title: str, xlabel: str, ylabel: str, percentage=False):
-
+def multiple_bar_chart(
+    ax: plt.Axes,
+    xvalues: list,
+    yvalues: dict,
+    title: str,
+    xlabel: str,
+    ylabel: str,
+    percentage=False,
+):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     x = np.arange(len(xvalues))  # the label locations
     ax.set_xticks(x)
-    ax.set_xticklabels(xvalues, fontsize='small')
+    ax.set_xticklabels(xvalues, fontsize="small")
     if percentage:
         ax.set_ylim(0.0, 1.0)
     width = 0.8  # the width of the bars
@@ -56,4 +89,21 @@ def multiple_bar_chart(ax: plt.Axes, xvalues: list, yvalues: dict, title: str, x
     for name, y in yvalues.items():
         ax.bar(x + k * step, y, step, label=name)
         k += 1
-    ax.legend(loc='lower center', ncol=len(yvalues), bbox_to_anchor=(0.5, -0.2), fancybox=True, shadow=True)
+    ax.legend(
+        loc="lower center",
+        ncol=len(yvalues),
+        bbox_to_anchor=(0.5, -0.2),
+        fancybox=True,
+        shadow=True,
+    )
+
+
+def save_model(model, filename):
+    filename = "{}/modules/saved_models/{}.sav".format(ROOT_DIR, filename)
+    pickle.dump(model, open(filename, "wb"))
+
+
+def load_model_sav(filename):
+    filename = "{}/modules/saved_models/{}.sav".format(ROOT_DIR, filename)
+    loaded_model = pickle.load(open(filename, "rb"))
+    return loaded_model
