@@ -1,22 +1,18 @@
-import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 import sklearn.metrics as metrics
 from sklearn.ensemble import RandomForestClassifier
 
-from constants import ROOT_DIR
-from modules.functions import multiple_line_chart
+from modules.functions import multiple_line_chart, save_model
 
 
-def random_forest():
-    data: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
-    y: np.ndarray = data.pop("class").values
-    X: np.ndarray = data.values
-    labels = pd.unique(y)
+def random_forest(trnX, tstX, trnY, tstY, n=300, d=50, f="log2"):
+    rf = RandomForestClassifier(n_estimators=n, max_depth=d, max_features=f)
+    rf.fit(trnX, trnY)
+    save_model(rf, "random_forest")
+    return rf
 
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
 
+def test_different_params(trnX, tstX, trnY, tstY):
     n_estimators = [5, 10, 25, 50, 75, 100, 150, 200, 250, 300]
     max_depths = [5, 10, 25, 50]
     max_features = ["sqrt", "log2"]
@@ -29,8 +25,7 @@ def random_forest():
         for d in max_depths:
             yvalues = []
             for n in n_estimators:
-                rf = RandomForestClassifier(n_estimators=n, max_depth=d, max_features=f)
-                rf.fit(trnX, trnY)
+                rf = random_forest(trnX, tstX, trnY, tstY, n, d, f)
                 prdY = rf.predict(tstX)
                 yvalues.append(metrics.accuracy_score(tstY, prdY))
             values[d] = yvalues
@@ -43,13 +38,4 @@ def random_forest():
             "accuracy",
             percentage=True,
         )
-
     plt.show()
-
-
-def main():
-    random_forest()
-
-
-if __name__ == "__main__":
-    main()
