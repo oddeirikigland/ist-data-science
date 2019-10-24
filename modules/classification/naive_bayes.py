@@ -26,12 +26,12 @@ def naive():
     pl.matshow(cnf_mtx)
     pl.title('Confusion matrix')
     pl.xlabel("True label")
-    pl.ylabel("predicted label")
+    pl.ylabel("predicted label ")
     pl.colorbar()
 
 
     estimators = {'GaussianNB': GaussianNB(),
-                  # 'MultinomialNB': MultinomialNB(),
+                  #  'MultinomialNB': MultinomialNB(),
                   'BernoulyNB': BernoulliNB()}
 
     xvalues = []
