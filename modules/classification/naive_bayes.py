@@ -6,7 +6,7 @@ import pylab as pl
 from modules.functions import bar_chart, save_model
 
 
-def naive(trnX, tstX, trnY, tstY):
+def naive(trnX, trnY):
     clf = BernoulliNB()
     clf.fit(trnX, trnY)
     save_model(clf, "naive_bayes")
@@ -14,7 +14,7 @@ def naive(trnX, tstX, trnY, tstY):
 
 
 def test_different_params(trnX, tstX, trnY, tstY, labels):
-    clf = naive(trnX, tstX, trnY, tstY)
+    clf = naive(trnX, trnY)
     prdY = clf.predict(tstX)
     cnf_mtx = metrics.confusion_matrix(tstY, prdY, labels)
     pl.matshow(cnf_mtx)
