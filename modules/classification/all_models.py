@@ -33,11 +33,13 @@ def create_classifier_models(trnX, trnY):
 
 
 def get_accuracy_models(tstX, tstY):
-    accuracies = {"nb": load_model_sav("naive_bayes").score(tstX, tstY), "knn": load_model_sav("knn").score(tstX, tstY),
-                  "dt": load_model_sav("decision_tree").score(tstX, tstY),
-                  "rf": load_model_sav("random_forest").score(tstX, tstY)}
+    accuracies = {
+        "nb": load_model_sav("naive_bayes").score(tstX, tstY),
+        "knn": load_model_sav("knn").score(tstX, tstY),
+        "dt": load_model_sav("decision_tree").score(tstX, tstY),
+        "rf": load_model_sav("random_forest").score(tstX, tstY),
+    }
     return accuracies
-
 
 
 def confusion_matrix_model(trnX, tstX, trnY, tstY, labels, prdY):

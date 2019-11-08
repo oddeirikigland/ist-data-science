@@ -2,7 +2,11 @@ import sys
 import pandas as pd
 
 from modules.preprocessing.preprocessing import normalize_df
-from modules.classification.all_models import split_dataset, create_classifier_models, get_accuracy_models
+from modules.classification.all_models import (
+    split_dataset,
+    create_classifier_models,
+    get_accuracy_models,
+)
 
 
 def report(source, dataframe, task):
@@ -29,7 +33,9 @@ def report(source, dataframe, task):
             out += "3. Comparative performance: NB | KNN | DT | RF\n"
 
             accuracies = get_accuracy_models(tstX, tstY)
-            out += "3.1 Accuracy: {:.2f} | {:.2f} | {:.2f} | {:.2f}".format(accuracies["nb"], accuracies["knn"], accuracies["dt"], accuracies["rf"])
+            out += "3.1 Accuracy: {:.2f} | {:.2f} | {:.2f} | {:.2f}\n".format(
+                accuracies["nb"], accuracies["knn"], accuracies["dt"], accuracies["rf"]
+            )
             out += "3.2 Sensitivity: \n"
 
     elif source == "CT":
@@ -43,7 +49,7 @@ if __name__ == "__main__":
     """A: read arguments"""
     args = sys.stdin.readline().rstrip("\n").split(" ")
     n, source, task = int(args[0]), args[1], args[2]
-    task = task.replace('\r', '')
+    task = task.replace("\r", "")
 
     """B: read dataset"""
     data, header = [], sys.stdin.readline().rstrip("\n").rstrip("\r").split(",")
