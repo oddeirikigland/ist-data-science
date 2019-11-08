@@ -61,8 +61,8 @@ def find_corr_var(df):
                 ) and (corr_matrix.columns[j] not in col_corr):
                     colname = corr_matrix.columns[i]  # getting the name of column
                     col_corr.add(colname)
-                    if colname in test_df.columns:
-                        del test_df[colname]  # deleting the column from the dataset
+                    if colname in newdf.columns:
+                        del newdf[colname]  # deleting the column from the dataset
     print(col_corr)
     return col_corr
 
@@ -139,70 +139,10 @@ def normalize_df(df_nr):
     df_not_normalize = df_nr[["id", "gender", "class"]]
 
     df_nr = df_nr.drop(["id", "gender", "class"], axis=1)
-    print(df_nr.head().to_string())
     transf = Normalizer().fit(df_nr)
     df_nr = pd.DataFrame(transf.transform(df_nr, copy=True), columns=df_nr.columns)
     df_nr = pd.concat([df_not_normalize, df_nr], axis=1)
-    print(df_nr.head().to_string())
     return df_nr
-
-
-def class_balance(dataframe):
-    df_nr = dataframe.copy()
-    unbal = df_nr
-    target_count = unbal["class"].value_counts()
-    plt.figure()
-    plt.title("Class balance")
-    plt.bar(target_count.index, target_count.values)
-
-    min_class = target_count.idxmin()
-    ind_min_class = target_count.index.get_loc(min_class)
-
-    print("Minority class:", target_count[ind_min_class])
-    print("Majority class:", target_count[1 - ind_min_class])
-    print(
-        "Proportion:",
-        round(target_count[ind_min_class] / target_count[1 - ind_min_class], 2),
-        ": 1",
-    )
-
-    RANDOM_STATE = 42
-    values = {
-        "Original": [
-            target_count.values[ind_min_class],
-            target_count.values[1 - ind_min_class],
-        ]
-    }
-
-    df_class_min = unbal[unbal["class"] == min_class]
-    df_class_max = unbal[unbal["class"] != min_class]
-
-    df_under = df_class_max.sample(len(df_class_min))
-    values["UnderSample"] = [target_count.values[ind_min_class], len(df_under)]
-
-    df_over = df_class_min.sample(len(df_class_max), replace=True)
-    values["OverSample"] = [len(df_over), target_count.values[1 - ind_min_class]]
-
-    smote = SMOTE(ratio="minority", random_state=RANDOM_STATE)
-    y = unbal.pop("class").values
-    X = unbal.values
-    _, smote_y = smote.fit_sample(X, y)
-    smote_target_count = pd.Series(smote_y).value_counts()
-    values["SMOTE"] = [
-        smote_target_count.values[ind_min_class],
-        smote_target_count.values[1 - ind_min_class],
-    ]
-
-    plt.figure()
-    multiple_bar_chart(
-        plt.gca(),
-        [target_count.index[ind_min_class], target_count.index[1 - ind_min_class]],
-        values,
-        "Target",
-        "frequency",
-        "Class balance",
-    )
-    plt.show()
 
 
 def main():
@@ -211,9 +151,6 @@ def main():
 
     # Result from smaller_df()
     # dataframe = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
-
-    # Plots class balance
-    # class_balance(dataframe)
 
 
 if __name__ == "__main__":
