@@ -17,8 +17,7 @@ from modules.preprocessing.balancing import (
 )
 
 
-def split_dataset():
-    data: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
+def split_dataset(data):
     y: np.ndarray = data.pop("class").values
     X: np.ndarray = data.values
     labels = pd.unique(y)
@@ -26,22 +25,19 @@ def split_dataset():
     return trnX, tstX, trnY, tstY, labels
 
 
-def create_models(trnX, tstX, trnY, tstY, labels):
-    decision_tree(trnX, tstX, trnY, tstY)
-    naive(trnX, tstX, trnY, tstY)
-    knn_model(trnX, tstX, trnY, tstY)
-    random_forest(trnX, tstX, trnY, tstY)
-
-
-def accuracy_model(model_name, model, tstX, tstY):
-    print("{}: {}".format(model_name, model.score(tstX, tstY)))
+def create_classifier_models(trnX, trnY):
+    decision_tree(trnX, trnY)
+    naive(trnX, trnY)
+    knn_model(trnX, trnY)
+    random_forest(trnX, trnY)
 
 
 def get_accuracy_models(tstX, tstY):
-    accuracy_model("Naive Bayes", load_model_sav("naive_bayes"), tstX, tstY)
-    accuracy_model("KNN", load_model_sav("knn"), tstX, tstY)
-    accuracy_model("Decision Tree", load_model_sav("decision_tree"), tstX, tstY)
-    accuracy_model("Random Forest", load_model_sav("random_forest"), tstX, tstY)
+    accuracies = {"nb": load_model_sav("naive_bayes").score(tstX, tstY), "knn": load_model_sav("knn").score(tstX, tstY),
+                  "dt": load_model_sav("decision_tree").score(tstX, tstY),
+                  "rf": load_model_sav("random_forest").score(tstX, tstY)}
+    return accuracies
+
 
 
 def confusion_matrix_model(trnX, tstX, trnY, tstY, labels, prdY):
@@ -110,7 +106,8 @@ def finds_best_data_set_balance(trnX, tstX, trnY, tstY):
 
 
 def main():
-    trnX, tstX, trnY, tstY, labels = split_dataset()
+    data: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
+    trnX, tstX, trnY, tstY, labels = split_dataset(data)
     # create_models(trnX, tstX, trnY, tstY, labels)
     # get_accuracy_models(tstX, tstY)
     # get_confusion_matrix_models(trnX, tstX, trnY, tstY, labels)

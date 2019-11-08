@@ -7,7 +7,7 @@ from constants import ROOT_DIR
 from modules.functions import multiple_line_chart, save_model
 
 
-def decision_tree(trnX, tstX, trnY, tstY):
+def decision_tree(trnX, trnY):
     tree = DecisionTreeClassifier(max_depth=5)
     tree.fit(trnX, trnY)
     save_model(tree, "decision_tree")

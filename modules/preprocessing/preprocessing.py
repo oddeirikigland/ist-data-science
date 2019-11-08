@@ -61,8 +61,8 @@ def find_corr_var(df):
                 ) and (corr_matrix.columns[j] not in col_corr):
                     colname = corr_matrix.columns[i]  # getting the name of column
                     col_corr.add(colname)
-                    if colname in test_df.columns:
-                        del test_df[colname]  # deleting the column from the dataset
+                    if colname in newdf.columns:
+                        del newdf[colname]  # deleting the column from the dataset
     print(col_corr)
     return col_corr
 
@@ -139,11 +139,9 @@ def normalize_df(df_nr):
     df_not_normalize = df_nr[["id", "gender", "class"]]
 
     df_nr = df_nr.drop(["id", "gender", "class"], axis=1)
-    print(df_nr.head().to_string())
     transf = Normalizer().fit(df_nr)
     df_nr = pd.DataFrame(transf.transform(df_nr, copy=True), columns=df_nr.columns)
     df_nr = pd.concat([df_not_normalize, df_nr], axis=1)
-    print(df_nr.head().to_string())
     return df_nr
 
 
