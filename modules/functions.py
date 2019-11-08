@@ -112,25 +112,27 @@ def load_model_sav(filename):
     return loaded_model
 
 
-def plot_confusion_matrix(ax: plt.Axes, cnf_matrix: np.ndarray, classes_names: list, normalize: bool = False):
+def plot_confusion_matrix(
+    ax: plt.Axes, cnf_matrix: np.ndarray, classes_names: list, normalize: bool = False
+):
     if normalize:
         total = cnf_matrix.sum(axis=1)[:, np.newaxis]
-        cm = cnf_matrix.astype('float') / total
+        cm = cnf_matrix.astype("float") / total
         title = "Normalized confusion matrix"
     else:
         cm = cnf_matrix
-        title = 'Confusion matrix'
+        title = "Confusion matrix"
     np.set_printoptions(precision=2)
     tick_marks = np.arange(0, len(classes_names), 1)
     ax.set_title(title)
-    ax.set_ylabel('True label')
-    ax.set_xlabel('Predicted label')
+    ax.set_ylabel("True label")
+    ax.set_xlabel("Predicted label")
     ax.set_xticks(tick_marks)
     ax.set_yticks(tick_marks)
     ax.set_xticklabels(classes_names)
     ax.set_yticklabels(classes_names)
-    ax.imshow(cm, interpolation='nearest', cmap=CMAP)
+    ax.imshow(cm, interpolation="nearest", cmap=CMAP)
 
-    fmt = '.2f' if normalize else 'd'
+    fmt = ".2f" if normalize else "d"
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
         ax.text(j, i, format(cm[i, j], fmt), horizontalalignment="center")

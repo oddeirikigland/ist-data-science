@@ -5,7 +5,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from modules.functions import multiple_line_chart, save_model
 
 
-def knn_model(trnX, tstX, trnY, tstY, n=19, d="manhattan"):
+def knn_model(trnX, trnY, n=19, d="manhattan"):
     knn = KNeighborsClassifier(n_neighbors=n, metric=d)
     knn.fit(trnX, trnY)
     save_model(knn, "knn")
@@ -19,7 +19,7 @@ def test_several_params(trnX, tstX, trnY, tstY):
     for d in dist:
         yvalues = []
         for n in nvalues:
-            knn = knn_model(trnX, tstX, trnY, tstY, n, d)
+            knn = knn_model(trnX, trnY, n, d)
             prdY = knn.predict(tstX)
             yvalues.append(metrics.accuracy_score(tstY, prdY))
         values[d] = yvalues
