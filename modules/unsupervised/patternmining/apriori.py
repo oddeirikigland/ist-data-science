@@ -7,13 +7,13 @@ from constants import ROOT_DIR
 
 
 def select_variables(df):
-    df=df.copy()
-    y=df[['class']]
-    df=df.drop(['class'],axis=1)
+    df = df.copy()
+    y = df[["class"]]
+    df = df.drop(["class"], axis=1)
     selector = SelectKBest(f_classif, k=10)
     select_df = selector.fit_transform(df, y)
-    mask=selector.get_support()
-    new_features=[]
+    mask = selector.get_support()
+    new_features = []
     for bool, feature in zip(mask, list(df.columns.values)):
         if bool:
             new_features.append(feature)
@@ -23,23 +23,24 @@ def select_variables(df):
 def discretize_cut(select_df):
     newdf = select_df.copy()
     for col in newdf:
-        if col not in ['class', 'id', 'gender']:
-            newdf[col] = pd.cut(newdf[col], 3, labels=['small', 'mid', 'large'])
+        if col not in ["class", "id", "gender"]:
+            newdf[col] = pd.cut(newdf[col], 3, labels=["small", "mid", "large"])
     return newdf
 
 
 def discretize_qcut(select_df):
     newdf = select_df.copy()
     for col in newdf:
-        if col not in ['class', 'id', 'gender']:
-            newdf[col] = pd.qcut(newdf[col], 3, labels=['small', 'mid', 'large'])
+        if col not in ["class", "id", "gender"]:
+            newdf[col] = pd.qcut(newdf[col], 3, labels=["small", "mid", "large"])
     return newdf
 
 
 def dummify(df):
     dummylist = []
     for att in df:
-        if att in ['class','id', 'gender']: df[att] = df[att].astype('category')
+        if att in ["class", "id", "gender"]:
+            df[att] = df[att].astype("category")
         dummylist.append(pd.get_dummies(df[[att]]))
     dummified_df = pd.concat(dummylist, axis=1)
     return dummified_df
@@ -61,21 +62,23 @@ def pat_match(dummified_df):
 
 def visualize_patternmatch(dummified_df):
     map = {}
-    for col in list(dummified_df): map[col] = (dummified_df[col] == 1).sum()
+    for col in list(dummified_df):
+        map[col] = (dummified_df[col] == 1).sum()
     keys = list(map.keys())
     freqs = list(map.values())
     plt.bar(np.arange(len(freqs)), freqs)
-    plt.xticks(np.arange(len(freqs)), keys, rotation='vertical')
+    plt.xticks(np.arange(len(freqs)), keys, rotation="vertical")
     plt.plot()
+
 
 def main():
     df = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
-    select_df=select_variables(df)
-    dis_c=discretize_cut(select_df)
+    select_df = select_variables(df)
+    dis_c = discretize_cut(select_df)
     print(dis_c)
-    #dis_q=discretize_cut(select_df)
-    dum=dummify(dis_c)
-    frequent_itemsets=pat_match(dum)
+    # dis_q=discretize_cut(select_df)
+    dum = dummify(dis_c)
+    frequent_itemsets = pat_match(dum)
     print(frequent_itemsets)
     print(visualize_patternmatch(dum))
 
