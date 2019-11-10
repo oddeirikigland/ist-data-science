@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 import itertools
+import json
+import sys
 
 from constants import ROOT_DIR
 
@@ -136,3 +138,22 @@ def plot_confusion_matrix(
     fmt = ".2f" if normalize else "d"
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
         ax.text(j, i, format(cm[i, j], fmt), horizontalalignment="center")
+
+
+def write_to_json(data, filename):
+    with open("{}/data/{}".format(ROOT_DIR, filename), "w") as outfile:
+        json.dump(data, outfile)
+
+
+def read_from_json(filename):
+    filename = "{}/data/{}".format(ROOT_DIR, filename)
+    try:
+        with open(filename) as json_file:
+            data = json.load(json_file)
+        return data
+    except FileNotFoundError:
+        print("{} does not exist".format(filename))
+        sys.exit(1)
+    except json.decoder.JSONDecodeError:
+        print("{} is not a json file".format(filename))
+        sys.exit(1)

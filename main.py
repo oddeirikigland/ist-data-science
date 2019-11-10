@@ -1,48 +1,25 @@
 import sys
 import pandas as pd
 
-from modules.preprocessing.preprocessing import normalize_df
-from modules.classification.all_models import (
-    split_dataset,
-    create_classifier_models,
-    get_accuracy_models,
-)
+from modules.preprocessing.preprocessing_report import preprocessing_report
+from modules.classification.classification_report import classification_report
+from modules.unsupervised.unsupervised_report import unsupervised_report
 
 
 def report(source, dataframe, task):
-    out = ""
-    df = dataframe.copy()
-
-    if source == "PD":
-        df = normalize_df(df)
-        out += "1. Applied preprocessing: Normalization\n"
-
-        if task == "preprocessing":
-            return out
-        if task == "classification":
-            trnX, tstX, trnY, tstY, labels = split_dataset(df)
-            create_classifier_models(trnX, trnY)
-
-            out += "2. Classifiers:\n"
-            out += "2.1 NB\n"
-            out += "a) Suggested parametrization: \n"
-            out += "b) Confusion matrix: \n"
-            out += "2.2 KNN\n"
-            out += "a) Suggested parametrization: \n"
-            out += "b) Confusion matrix: \n"
-            out += "3. Comparative performance: NB | KNN | DT | RF\n"
-
-            accuracies = get_accuracy_models(tstX, tstY)
-            out += "3.1 Accuracy: {:.2f} | {:.2f} | {:.2f} | {:.2f}\n".format(
-                accuracies["nb"], accuracies["knn"], accuracies["dt"], accuracies["rf"]
-            )
-            out += "3.2 Sensitivity: \n"
-
-    elif source == "CT":
-        pass
-    else:
+    if source != "PD" and source != "CT":
         return "Invalid source"
-    return out
+
+    df = dataframe.copy()
+    df = preprocessing_report(data=df, source=source)
+
+    if task == "preprocessing":
+        return ""
+    elif task == "classification":
+        classification_report(data=df, source=source)
+    elif task == "unsupervised":
+        unsupervised_report(data=df, source=source)
+    return ""
 
 
 if __name__ == "__main__":
