@@ -1,4 +1,8 @@
-from modules.classification.all_models import split_dataset, create_classifier_models, get_accuracy_models
+from modules.classification.all_models import (
+    split_dataset,
+    create_classifier_models,
+    get_accuracy_models,
+)
 
 
 def classification_report(data, source):
@@ -19,10 +23,7 @@ def classification_report(data, source):
     accuracies = get_accuracy_models(tstX, tstY)
     print(
         " 3.1 Accuracy: {:.2f} | {:.2f} | {:.2f} | {:.2f}".format(
-            accuracies["nb"],
-            accuracies["knn"],
-            accuracies["dt"],
-            accuracies["rf"],
+            accuracies["nb"], accuracies["knn"], accuracies["dt"], accuracies["rf"]
         )
     )
     print(" 3.2 Sensitivity: ")

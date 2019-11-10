@@ -8,9 +8,7 @@ def preprocessing_report(data, source):
     df = data.copy()
 
     print("1. Applies preprocessing:")
-    df[["class", "id", "gender"]] = df[["class", "id", "gender"]].apply(
-        pd.to_numeric
-    )
+    df[["class", "id", "gender"]] = df[["class", "id", "gender"]].apply(pd.to_numeric)
     df = normalize_df(df)
     print(" 1.1 Normalization")
     print(" 1.2 Feature selection")
