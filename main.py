@@ -1,9 +1,12 @@
 import sys
 import pandas as pd
+import warnings
 
 from modules.preprocessing.preprocessing_report import preprocessing_report
 from modules.classification.classification_report import classification_report
 from modules.unsupervised.unsupervised_report import unsupervised_report
+
+warnings.filterwarnings("ignore")
 
 
 def report(source, dataframe, task):

@@ -134,11 +134,11 @@ def smaller_df(dataframe):
     )
 
 
-def normalize_df(df_nr):
+def normalize_df(df_nr, columns_not_to_normalize):
     df_nr = df_nr.copy()
-    df_not_normalize = df_nr[["id", "gender", "class"]]
+    df_not_normalize = df_nr[columns_not_to_normalize]
 
-    df_nr = df_nr.drop(["id", "gender", "class"], axis=1)
+    df_nr = df_nr.drop(columns_not_to_normalize, axis=1)
     transf = Normalizer().fit(df_nr)
     df_nr = pd.DataFrame(transf.transform(df_nr, copy=True), columns=df_nr.columns)
     df_nr = pd.concat([df_not_normalize, df_nr], axis=1)

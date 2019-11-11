@@ -16,8 +16,8 @@ def classification_report(data, source):
     print("     a) Suggested parametrization:")
     print("     b) Confusion matrix:")
     print(" 2.2 KNN")
-    print("         a) Suggested parametrization:")
-    print("         b) Confusion matrix:")
+    print("     a) Suggested parametrization:")
+    print("     b) Confusion matrix:")
     print("3. Comparative performance: NB | KNN | DT | RF")
 
     accuracies = get_accuracy_models(tstX, tstY)

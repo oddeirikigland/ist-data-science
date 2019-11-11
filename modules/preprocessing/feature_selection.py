@@ -7,8 +7,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
 from constants import ROOT_DIR
-from modules.functions import write_to_json, read_from_json, bar_chart
-from modules.classification.all_models import split_dataset, calculte_models_auc_score
+from modules.functions import write_to_json, read_from_json, bar_chart, calculte_models_auc_score
+from modules.classification.all_models import split_dataset
 from modules.classification.naive_bayes import naive
 from modules.classification.knn import knn_model
 
@@ -70,10 +70,10 @@ def tree_based_select_from_model(X, y, num_feats):
     return embeded_rf_support, embeded_rf_feature
 
 
-def sorts_df_by_features(data, number_features):
+def sorts_df_by_features(data, y_column_name, number_features):
     df = data.copy()
-    y_data = df["class"]
-    x_data = df.drop(["class"], axis=1)
+    y_data = df[y_column_name]
+    x_data = df.drop([y_column_name], axis=1)
 
     x_norm = MinMaxScaler().fit_transform(x_data)
     feature_name = x_data.columns.tolist()
@@ -113,11 +113,15 @@ def sorts_df_by_features(data, number_features):
     return feature_selection_df["Feature"].head(number_features).tolist()
 
 
-def find_best_feature_sub_sets(data, step_size=10, verbose=False, save_to_file=False):
+def find_best_feature_sub_sets(
+    data, y_column_name, step_size=10, verbose=False, save_to_file=False
+):
     df = data.copy()
     feature_sets = {}
     for i in range(1, len(df.columns), step_size):
-        feature_sets[str(i)] = sorts_df_by_features(df, number_features=i)
+        feature_sets[str(i)] = sorts_df_by_features(
+            df, y_column_name, number_features=i
+        )
         if verbose:
             print(i)
     if save_to_file:
@@ -126,14 +130,15 @@ def find_best_feature_sub_sets(data, step_size=10, verbose=False, save_to_file=F
 
 
 def get_scores_from_feature_sub_sets(
-    df, feature_sets, classifier=naive, save_to_file=False
+    df, feature_sets, y_column_name, classifier=naive, save_to_file=False
 ):
     trnX, tstX, trnY, tstY, labels = split_dataset(df)
     best_score = 0.51
     best_number_features = 0
     feature_sub_set_scores = {}
-    trn_x_df = pd.DataFrame.from_records(trnX, columns=df.columns)
-    tst_x_df = pd.DataFrame.from_records(tstX, columns=df.columns)
+    df_without_class = df.drop([y_column_name], axis=1)
+    trn_x_df = pd.DataFrame.from_records(trnX, columns=df_without_class.columns)
+    tst_x_df = pd.DataFrame.from_records(tstX, columns=df_without_class.columns)
 
     for key, value in feature_sets.items():
         trn_x_feature_select = trn_x_df[value].to_numpy()
@@ -157,32 +162,38 @@ def plots_feature_sub_set_scores(feature_sub_set_scores):
         ax=plt.gca(),
         xvalues=feature_sub_set_scores.keys(),
         yvalues=feature_sub_set_scores.values(),
-        title="asd",
-        xlabel="aa",
-        ylabel="www",
+        title="AUC score based on number of features used",
+        xlabel="Number of features",
+        ylabel="AUC score",
         percentage=False,
     )
     plt.show()
 
 
-def reduce_df_feature_selection(data):
+def reduce_df_feature_selection(data, y_column_name):
     df = data.copy()
-    features_in_sub_sets = find_best_feature_sub_sets(df)
+    features_in_sub_sets = find_best_feature_sub_sets(df, y_column_name)
     best_score, best_number_features, best_feature_sets = get_scores_from_feature_sub_sets(
-        df, features_in_sub_sets
+        df, features_in_sub_sets, y_column_name
     )
-    return best_score, best_number_features, data[best_feature_sets + ["class"]]
+    return best_score, best_number_features, data[best_feature_sets + [y_column_name]]
 
 
 if __name__ == "__main__":
     data: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
 
-    find_best_feature_sub_sets(data, step_size=1, verbose=True, save_to_file=True)
+    find_best_feature_sub_sets(
+        data, y_column_name="class", step_size=1, verbose=True, save_to_file=True
+    )
 
     feature_sets = read_from_json("feature_sets")
     print(
         get_scores_from_feature_sub_sets(
-            data, feature_sets=feature_sets, classifier=knn_model, save_to_file=True
+            data,
+            feature_sets=feature_sets,
+            y_column_name="class",
+            classifier=knn_model,
+            save_to_file=True,
         )
     )
 
