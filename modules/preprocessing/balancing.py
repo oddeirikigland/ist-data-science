@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 from modules.classification.knn import knn_model
 from modules.classification.naive_bayes import naive
-from modules.functions import multiple_bar_chart, calculte_models_auc_score
+from modules.functions import multiple_bar_chart, calculte_models_auc_score, print_table
 
 
 def balance_plots(values):
@@ -197,7 +197,16 @@ def finds_best_data_set_balance(trnX, tstX, trnY, tstY, multi_class):
         df_diff_balancing["{}_x".format(best_technique)],
         df_diff_balancing["{}_y".format(best_technique)],
     )
+    print_performance_table(scores)
     return best_technique, best_technique_scores, scores, values, best_df_x, best_df_y
+
+
+def print_performance_table(scores):
+    scores_to_print = [["", "NB", "KNN"]]
+    for key, value in scores.items():
+        scores_to_print.append([key, round(value[0], 2), round(value[1], 2)])
+    print("Comparative performance of balancing techniques:")
+    print_table(scores_to_print)
 
 
 def get_best_balancing_score_and_df(scores):

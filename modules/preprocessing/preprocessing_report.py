@@ -1,10 +1,7 @@
 import pandas as pd
 
 from modules.classification.all_models import split_dataset
-from modules.preprocessing.balancing import (
-    balancing_training_dataset,
-    finds_best_data_set_balance,
-)
+from modules.preprocessing.balancing import finds_best_data_set_balance
 from modules.preprocessing.feature_selection import reduce_df_feature_selection
 from modules.preprocessing.preprocessing import normalize_df
 
@@ -20,6 +17,7 @@ def preprocessing_report(data, source):
             pd.to_numeric
         )
         df = normalize_df(df, columns_not_to_normalize=["id", "gender", "class"])
+        print("Normalization completed")
 
         print(" 1.2 Balancing")
         trnX, tstX, trnY, tstY, labels = split_dataset(df)
@@ -27,11 +25,6 @@ def preprocessing_report(data, source):
             trnX, tstX, trnY, tstY, multi_class=False
         )
         print("Best balancing technique is {}".format(best_technique))
-        print(
-            "{} have {:.2f} in auc score for naive bayes and {:.2f} in AUC score for KNN".format(
-                best_technique, best_technique_scores[0], best_technique_scores[1]
-            )
-        )
         print("Continuing using the data set balanced by {}".format(best_technique))
         trnX = best_df_x.copy()
         trnY = best_df_y.copy()
@@ -53,6 +46,7 @@ def preprocessing_report(data, source):
     else:
         print(" 1.1 Normalization")
         df = normalize_df(df, columns_not_to_normalize=["Cover_Type"])
+        print("Normalization completed")
 
         print(" 1.2 Balancing")
         trnX, tstX, trnY, tstY, labels = split_dataset(df, y_column_name="Cover_Type")
@@ -60,13 +54,9 @@ def preprocessing_report(data, source):
             trnX, tstX, trnY, tstY, multi_class=True
         )
         print("Best balancing technique is {}".format(best_technique))
-        print(
-            "{} have {:.2f} in auc score for naive bayes and {:.2f} in AUC score for KNN".format(
-                best_technique, best_technique_scores[0], best_technique_scores[1]
-            )
-        )
         print("Continuing using the data set balanced by {}".format(best_technique))
         trnX = best_df_x.copy()
         trnY = best_df_y.copy()
 
+    print("Preprocessing completed")
     return df, trnX, tstX, trnY, tstY
