@@ -23,11 +23,18 @@ def preprocessing_report(data, source):
 
         print(" 1.2 Balancing")
         trnX, tstX, trnY, tstY, labels = split_dataset(df)
-        scores, values = finds_best_data_set_balance(
+        best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
             trnX, tstX, trnY, tstY, multi_class=False
         )
-        # TODO: print scores from balancing comparison more informative
-        print(scores)
+        print("Best balancing technique is {}".format(best_technique))
+        print(
+            "{} have {:.2f} in auc score for naive bayes and {:.2f} in AUC score for KNN".format(
+                best_technique, best_technique_scores[0], best_technique_scores[1]
+            )
+        )
+        print("Continuing using the data set balanced by {}".format(best_technique))
+        trnX = best_df_x.copy()
+        trnY = best_df_y.copy()
 
         print(" 1.3 Feature selection")
         best_score, best_number_features, df = reduce_df_feature_selection(
@@ -49,10 +56,17 @@ def preprocessing_report(data, source):
 
         print(" 1.2 Balancing")
         trnX, tstX, trnY, tstY, labels = split_dataset(df, y_column_name="Cover_Type")
-        scores, values = finds_best_data_set_balance(
+        best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
             trnX, tstX, trnY, tstY, multi_class=True
         )
-        # TODO: print scores from balancing comparison more informative
-        print(scores)
+        print("Best balancing technique is {}".format(best_technique))
+        print(
+            "{} have {:.2f} in auc score for naive bayes and {:.2f} in AUC score for KNN".format(
+                best_technique, best_technique_scores[0], best_technique_scores[1]
+            )
+        )
+        print("Continuing using the data set balanced by {}".format(best_technique))
+        trnX = best_df_x.copy()
+        trnY = best_df_y.copy()
 
-    return df
+    return df, trnX, tstX, trnY, tstY

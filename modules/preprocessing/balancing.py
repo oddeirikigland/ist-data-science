@@ -113,22 +113,23 @@ def balancing_training_dataset(trnX, trnY):
     over_sample_y = df_over_sample.pop("Outcome").values
     over_sample_x = df_over_sample.values
 
-    return (
-        under_sample_y,
-        under_sample_x,
-        over_sample_y,
-        over_sample_x,
-        smote_x,
-        smote_y,
-        values,
-    )
+    df_diff_balancing = {
+        "original_x": trnX,
+        "original_y": trnY,
+        "under_sample_x": under_sample_x,
+        "under_sample_y": under_sample_y,
+        "over_sample_x": over_sample_x,
+        "over_sample_y": over_sample_y,
+        "smote_x": smote_x,
+        "smote_y": smote_y,
+    }
+
+    return (df_diff_balancing, values)
 
 
 def finds_best_data_set_balance(trnX, tstX, trnY, tstY, multi_class):
     scores = {}
-    under_sample_y, under_sample_x, over_sample_y, over_sample_x, smote_x, smote_y, values = balancing_training_dataset(
-        trnX, trnY
-    )
+    df_diff_balancing, values = balancing_training_dataset(trnX, trnY)
 
     unbalanced_naive_bayes = calculte_models_auc_score(
         naive, trnX, trnY, tstX, tstY, multi_class
@@ -136,32 +137,72 @@ def finds_best_data_set_balance(trnX, tstX, trnY, tstY, multi_class):
     unbalanced_knn = calculte_models_auc_score(
         knn_model, trnX, trnY, tstX, tstY, multi_class
     )
-    scores["unbalanced"] = [unbalanced_naive_bayes, unbalanced_knn]
+    scores["original"] = [unbalanced_naive_bayes, unbalanced_knn]
 
     under_sample_naive_bayes = calculte_models_auc_score(
-        naive, under_sample_x, under_sample_y, tstX, tstY, multi_class
+        naive,
+        df_diff_balancing["under_sample_x"],
+        df_diff_balancing["under_sample_y"],
+        tstX,
+        tstY,
+        multi_class,
     )
     under_sample_knn = calculte_models_auc_score(
-        knn_model, under_sample_x, under_sample_y, tstX, tstY, multi_class
+        knn_model,
+        df_diff_balancing["under_sample_x"],
+        df_diff_balancing["under_sample_y"],
+        tstX,
+        tstY,
+        multi_class,
     )
     scores["under_sample"] = [under_sample_naive_bayes, under_sample_knn]
 
     over_sample_naive_bayes = calculte_models_auc_score(
-        naive, over_sample_x, over_sample_y, tstX, tstY, multi_class
+        naive,
+        df_diff_balancing["over_sample_x"],
+        df_diff_balancing["over_sample_y"],
+        tstX,
+        tstY,
+        multi_class,
     )
     over_sample_knn = calculte_models_auc_score(
-        knn_model, over_sample_x, over_sample_y, tstX, tstY, multi_class
+        knn_model,
+        df_diff_balancing["over_sample_x"],
+        df_diff_balancing["over_sample_y"],
+        tstX,
+        tstY,
+        multi_class,
     )
     scores["over_sample"] = [over_sample_naive_bayes, over_sample_knn]
 
     smote_naive_bayes = calculte_models_auc_score(
-        naive, smote_x, smote_y, tstX, tstY, multi_class
+        naive,
+        df_diff_balancing["smote_x"],
+        df_diff_balancing["smote_y"],
+        tstX,
+        tstY,
+        multi_class,
     )
     smote_knn = calculte_models_auc_score(
-        knn_model, smote_x, smote_y, tstX, tstY, multi_class
+        knn_model,
+        df_diff_balancing["smote_x"],
+        df_diff_balancing["smote_y"],
+        tstX,
+        tstY,
+        multi_class,
     )
     scores["smote"] = [smote_naive_bayes, smote_knn]
-    return scores, values
+    best_technique, best_technique_scores = get_best_balancing_score_and_df(scores)
+    best_df_x, best_df_y = (
+        df_diff_balancing["{}_x".format(best_technique)],
+        df_diff_balancing["{}_y".format(best_technique)],
+    )
+    return best_technique, best_technique_scores, scores, values, best_df_x, best_df_y
+
+
+def get_best_balancing_score_and_df(scores):
+    max_score_key = max(scores, key=lambda k: sum(scores[k]))
+    return max_score_key, scores[max_score_key]
 
 
 if __name__ == "__main__":
@@ -171,7 +212,7 @@ if __name__ == "__main__":
     data = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
     df = data.copy()
     trnX, tstX, trnY, tstY, labels = split_dataset(df, y_column_name="class")
-    scores, values = finds_best_data_set_balance(
+    best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
         trnX, tstX, trnY, tstY, multi_class=False
     )
     balance_plots(values)
@@ -181,7 +222,7 @@ if __name__ == "__main__":
     data = pd.read_csv("{}/data/covtype.data".format(ROOT_DIR))
     df = data.copy()
     trnX, tstX, trnY, tstY, labels = split_dataset(df, y_column_name="Cover_Type")
-    scores, values = finds_best_data_set_balance(
+    best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
         trnX, tstX, trnY, tstY, multi_class=True
     )
     balance_plots(values)

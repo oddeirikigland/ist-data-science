@@ -14,7 +14,7 @@ def report(source, dataframe, task):
         return "Invalid source"
 
     df = dataframe.copy()
-    df = preprocessing_report(data=df, source=source)
+    df, trnX, tstX, trnY, tstY = preprocessing_report(data=df, source=source)
 
     if task == "preprocessing":
         return ""

@@ -7,7 +7,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
 from constants import ROOT_DIR
-from modules.functions import write_to_json, read_from_json, bar_chart, calculte_models_auc_score
+from modules.functions import (
+    write_to_json,
+    read_from_json,
+    bar_chart,
+    calculte_models_auc_score,
+)
 from modules.classification.all_models import split_dataset
 from modules.classification.naive_bayes import naive
 from modules.classification.knn import knn_model
