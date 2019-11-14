@@ -3,47 +3,48 @@ import sklearn.metrics as metrics
 from sklearn.naive_bayes import GaussianNB, MultinomialNB, BernoulliNB
 import pylab as pl
 
-from modules.functions import bar_chart, save_model
+from modules.functions import bar_chart, save_model, calculte_models_auc_score
 
 
-def naive(trnX, trnY, save_file=False):
-    clf = BernoulliNB()
+def naive(trnX, trnY, estimator=BernoulliNB, save_file=False):
+    clf = estimator()
     clf.fit(trnX, trnY)
     if save_file:
         save_model(clf, "naive_bayes")
     return clf
 
 
-def test_different_params(trnX, tstX, trnY, tstY, labels):
-    clf = naive(trnX, trnY)
-    prdY = clf.predict(tstX)
-    cnf_mtx = metrics.confusion_matrix(tstY, prdY, labels)
-    pl.matshow(cnf_mtx)
-    pl.title("Confusion matrix")
-    pl.xlabel("True label")
-    pl.ylabel("predicted label ")
-    pl.colorbar()
+def naive_test_different_params(trnX, tstX, trnY, tstY, multi_class=False, plot=False):
+    best_estimator = ""
+    best_score = 0
+    best_model = None
     estimators = {
-        "GaussianNB": GaussianNB(),
+        "GaussianNB": GaussianNB,
         #  'MultinomialNB': MultinomialNB(),
-        "BernoulyNB": BernoulliNB(),
+        "BernoulyNB": BernoulliNB,
     }
     xvalues = []
     yvalues = []
-    for clf in estimators:
-        xvalues.append(clf)
-        estimators[clf].fit(trnX, trnY)
-        prdY = estimators[clf].predict(tstX)
-        yvalues.append(metrics.accuracy_score(tstY, prdY))
+    for key, value in estimators.items():
+        xvalues.append(key)
+        model = naive(trnX, trnY, estimator=value)
+        score = calculte_models_auc_score(model, tstX, tstY, multi_class)
+        yvalues.append(score)
+        if score > best_score:
+            best_score = score
+            best_estimator = key
+            best_model = model
 
-    plt.figure()
-    bar_chart(
-        plt.gca(),
-        xvalues,
-        yvalues,
-        "Comparison of Naive Bayes Models",
-        "",
-        "accuracy",
-        percentage=True,
-    )
-    plt.show()
+    if plot:
+        plt.figure()
+        bar_chart(
+            plt.gca(),
+            xvalues,
+            yvalues,
+            "Comparison of Naive Bayes Models",
+            "",
+            "accuracy",
+            percentage=True,
+        )
+        plt.show()
+    return best_model, best_score, best_estimator

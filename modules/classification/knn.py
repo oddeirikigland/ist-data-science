@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import sklearn.metrics as metrics
 from sklearn.neighbors import KNeighborsClassifier
 
-from modules.functions import multiple_line_chart, save_model
+from modules.functions import multiple_line_chart, save_model, calculte_models_auc_score
 
 
 def knn_model(trnX, trnY, n=19, d="manhattan", save_file=False):
@@ -13,19 +13,30 @@ def knn_model(trnX, trnY, n=19, d="manhattan", save_file=False):
     return knn
 
 
-def test_several_params(trnX, tstX, trnY, tstY):
+def knn_test_several_params(trnX, tstX, trnY, tstY, multi_class, plot=False):
     nvalues = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
     dist = ["manhattan", "euclidean", "chebyshev"]
     values = {}
+    best_n_value = 0
+    best_dist = 0
+    best_score = 0
+    best_model = None
     for d in dist:
         yvalues = []
         for n in nvalues:
             knn = knn_model(trnX, trnY, n, d)
-            prdY = knn.predict(tstX)
-            yvalues.append(metrics.accuracy_score(tstY, prdY))
+            score = calculte_models_auc_score(knn, tstX, tstY, multi_class)
+            if score > best_score:
+                best_score = score
+                best_n_value = n
+                best_dist = d
+                best_model = knn
+            yvalues.append(score)
         values[d] = yvalues
-    plt.figure()
-    multiple_line_chart(
-        plt.gca(), nvalues, values, "KNN variants", "n", "accuracy", percentage=True
-    )
-    plt.show()
+    if plot:
+        plt.figure()
+        multiple_line_chart(
+            plt.gca(), nvalues, values, "KNN variants", "n", "accuracy", percentage=True
+        )
+        plt.show()
+    return best_model, best_score, best_dist, best_n_value

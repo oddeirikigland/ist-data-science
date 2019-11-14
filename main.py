@@ -14,12 +14,14 @@ def report(source, dataframe, task):
         return "Invalid source"
 
     df = dataframe.copy()
-    df, trnX, tstX, trnY, tstY = preprocessing_report(data=df, source=source)
+    df, trnX, tstX, trnY, tstY, labels = preprocessing_report(data=df, source=source)
 
     if task == "preprocessing":
         return ""
     elif task == "classification":
-        classification_report(trnX=trnX, tstX=tstX, trnY=trnY, tstY=tstY, source=source)
+        classification_report(
+            trnX=trnX, tstX=tstX, trnY=trnY, tstY=tstY, labels=labels, source=source
+        )
     elif task == "unsupervised":
         unsupervised_report(data=df, source=source)
     return ""

@@ -12,17 +12,20 @@ def preprocessing_report(data, source):
     print("1. Applies preprocessing:")
     if source == "PD":
         target_name = "class"
+
         print(" 1.1 Normalization")
         df[["class", "id", "gender"]] = df[["class", "id", "gender"]].apply(
             pd.to_numeric
         )
         df = normalize_df(df, columns_not_to_normalize=["id", "gender", "class"])
-        print("Normalization completed")
 
-        print(" 1.2 Feature selection")
+        print(" 1.2 Use median of values for same person")
+        df = df.groupby(by="id").median().reset_index()
+
+        print(" 1.3 Feature selection")
         # TODO: reduce step size before submit project
         best_score, best_number_features, df = reduce_df_feature_selection(
-            df, y_column_name=target_name, step_size=700
+            df, y_column_name=target_name, step_size=20
         )
         print(
             "   a) Best number of features is {}, with an AUC score of {:.2f}".format(
@@ -35,7 +38,7 @@ def preprocessing_report(data, source):
             )
         )
 
-        print(" 1.3 Balancing")
+        print(" 1.4 Balancing")
         trnX, tstX, trnY, tstY, labels = split_dataset(df)
         best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
             trnX, tstX, trnY, tstY, multi_class=False
@@ -61,4 +64,4 @@ def preprocessing_report(data, source):
         trnY = best_df_y.copy()
 
     print("Preprocessing completed")
-    return df, trnX, tstX, trnY, tstY
+    return df, trnX, tstX, trnY, tstY, labels
