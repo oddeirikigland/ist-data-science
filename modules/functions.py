@@ -5,6 +5,8 @@ import pickle
 import itertools
 import json
 import sys
+from sklearn.metrics import roc_auc_score
+from sklearn.preprocessing import LabelBinarizer
 
 from constants import ROOT_DIR
 
@@ -157,3 +159,32 @@ def read_from_json(filename):
     except json.decoder.JSONDecodeError:
         print("{} is not a json file".format(filename))
         sys.exit(1)
+
+
+def calculte_models_auc_score(classifier, trnX, trnY, tstX, tstY, multi_class=False):
+    model = classifier(trnX, trnY)
+    pred_y = model.predict(tstX)
+    return (
+        multi_class_roc_auc_score(tstY, pred_y)
+        if multi_class
+        else roc_auc_score(tstY, pred_y)
+    )
+
+
+def multi_class_roc_auc_score(y_test, y_pred, average="macro"):
+    lb = LabelBinarizer()
+    lb.fit(y_test)
+    y_test = lb.transform(y_test)
+    y_pred = lb.transform(y_pred)
+    return roc_auc_score(y_test, y_pred, average=average)
+
+
+def print_table(table):
+    longest_cols = [
+        (max([len(str(row[i])) for row in table]) + 3) for i in range(len(table[0]))
+    ]
+    row_format = "".join(
+        ["{:>" + str(longest_col) + "}" for longest_col in longest_cols]
+    )
+    for row in table:
+        print(row_format.format(*row))

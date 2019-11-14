@@ -1,9 +1,12 @@
 import sys
 import pandas as pd
+import warnings
 
 from modules.preprocessing.preprocessing_report import preprocessing_report
 from modules.classification.classification_report import classification_report
 from modules.unsupervised.unsupervised_report import unsupervised_report
+
+warnings.filterwarnings("ignore")
 
 
 def report(source, dataframe, task):
@@ -11,7 +14,7 @@ def report(source, dataframe, task):
         return "Invalid source"
 
     df = dataframe.copy()
-    df = preprocessing_report(data=df, source=source)
+    df, trnX, tstX, trnY, tstY = preprocessing_report(data=df, source=source)
 
     if task == "preprocessing":
         return ""
