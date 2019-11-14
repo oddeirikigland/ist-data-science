@@ -161,8 +161,7 @@ def read_from_json(filename):
         sys.exit(1)
 
 
-def calculte_models_auc_score(classifier, trnX, trnY, tstX, tstY, multi_class=False):
-    model = classifier(trnX, trnY)
+def calculte_models_auc_score(model, tstX, tstY, multi_class=False):
     pred_y = model.predict(tstX)
     return (
         multi_class_roc_auc_score(tstY, pred_y)

@@ -6,10 +6,11 @@ import pylab as pl
 from modules.functions import bar_chart, save_model
 
 
-def naive(trnX, trnY):
+def naive(trnX, trnY, save_file=False):
     clf = BernoulliNB()
     clf.fit(trnX, trnY)
-    save_model(clf, "naive_bayes")
+    if save_file:
+        save_model(clf, "naive_bayes")
     return clf
 
 

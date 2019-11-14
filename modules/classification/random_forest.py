@@ -5,10 +5,11 @@ from sklearn.ensemble import RandomForestClassifier
 from modules.functions import multiple_line_chart, save_model
 
 
-def random_forest(trnX, trnY, n=300, d=50, f="log2"):
+def random_forest(trnX, trnY, n=300, d=50, f="log2", save_file=False):
     rf = RandomForestClassifier(n_estimators=n, max_depth=d, max_features=f)
     rf.fit(trnX, trnY)
-    save_model(rf, "random_forest")
+    if save_file:
+        save_model(rf, "random_forest")
     return rf
 
 

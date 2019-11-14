@@ -5,10 +5,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from modules.functions import multiple_line_chart, save_model
 
 
-def knn_model(trnX, trnY, n=19, d="manhattan"):
+def knn_model(trnX, trnY, n=19, d="manhattan", save_file=False):
     knn = KNeighborsClassifier(n_neighbors=n, metric=d)
     knn.fit(trnX, trnY)
-    save_model(knn, "knn")
+    if save_file:
+        save_model(knn, "knn")
     return knn
 
 

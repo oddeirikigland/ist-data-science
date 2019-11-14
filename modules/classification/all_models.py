@@ -5,7 +5,11 @@ import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 
 from constants import ROOT_DIR
-from modules.functions import load_model_sav, plot_confusion_matrix
+from modules.functions import (
+    load_model_sav,
+    plot_confusion_matrix,
+    calculte_models_auc_score,
+)
 from modules.classification.decision_tree import decision_tree
 from modules.classification.knn import knn_model
 from modules.classification.random_forest import random_forest
@@ -22,20 +26,11 @@ def split_dataset(data, y_column_name="class"):
 
 
 def create_classifier_models(trnX, trnY):
-    decision_tree(trnX, trnY)
-    naive(trnX, trnY)
-    knn_model(trnX, trnY)
-    random_forest(trnX, trnY)
-
-
-def get_accuracy_models(tstX, tstY):
-    accuracies = {
-        "nb": load_model_sav("naive_bayes").score(tstX, tstY),
-        "knn": load_model_sav("knn").score(tstX, tstY),
-        "dt": load_model_sav("decision_tree").score(tstX, tstY),
-        "rf": load_model_sav("random_forest").score(tstX, tstY),
-    }
-    return accuracies
+    dt = decision_tree(trnX, trnY)
+    nb = naive(trnX, trnY)
+    knn = knn_model(trnX, trnY)
+    rf = random_forest(trnX, trnY)
+    return nb, knn, dt, rf
 
 
 def confusion_matrix_model(trnX, tstX, trnY, tstY, labels, prdY):
@@ -47,6 +42,16 @@ def confusion_matrix_model(trnX, tstX, trnY, tstY, labels, prdY):
         axs[0, 1], metrics.confusion_matrix(tstY, prdY, labels), labels, normalize=True
     )
     plt.tight_layout()
+
+
+def get_accuracy_models(tstX, tstY, nb, knn, dt, rf):
+    accuracies = {
+        "nb": nb.score(tstX, tstY),
+        "knn": knn.score(tstX, tstY),
+        "dt": dt.score(tstX, tstY),
+        "rf": rf.score(tstX, tstY),
+    }
+    return accuracies
 
 
 def get_confusion_matrix_models(trnX, tstX, trnY, tstY, labels):
@@ -63,6 +68,16 @@ def get_confusion_matrix_models(trnX, tstX, trnY, tstY, labels):
         trnX, tstX, trnY, tstY, labels, load_model_sav("random_forest").predict(tstX)
     )
     plt.show()
+
+
+def get_sensitivity_models(tstX, tstY, nb, knn, dt, rf, multi_class):
+    sensitivity = {
+        "nb": calculte_models_auc_score(nb, tstX, tstY, multi_class),
+        "knn": calculte_models_auc_score(knn, tstX, tstY, multi_class),
+        "dt": calculte_models_auc_score(dt, tstX, tstY, multi_class),
+        "rf": calculte_models_auc_score(rf, tstX, tstY, multi_class),
+    }
+    return sensitivity
 
 
 def main():

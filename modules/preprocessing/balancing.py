@@ -131,66 +131,50 @@ def finds_best_data_set_balance(trnX, tstX, trnY, tstY, multi_class):
     scores = {}
     df_diff_balancing, values = balancing_training_dataset(trnX, trnY)
 
+    naive_model = naive(trnX, trnY)
+    knn_model_fitted = knn_model(trnX, trnY)
     unbalanced_naive_bayes = calculte_models_auc_score(
-        naive, trnX, trnY, tstX, tstY, multi_class
+        naive_model, tstX, tstY, multi_class
     )
     unbalanced_knn = calculte_models_auc_score(
-        knn_model, trnX, trnY, tstX, tstY, multi_class
+        knn_model_fitted, tstX, tstY, multi_class
     )
     scores["original"] = [unbalanced_naive_bayes, unbalanced_knn]
 
+    naive_model = naive(
+        df_diff_balancing["under_sample_x"], df_diff_balancing["under_sample_y"]
+    )
+    knn_model_fitted = knn_model(
+        df_diff_balancing["under_sample_x"], df_diff_balancing["under_sample_y"]
+    )
     under_sample_naive_bayes = calculte_models_auc_score(
-        naive,
-        df_diff_balancing["under_sample_x"],
-        df_diff_balancing["under_sample_y"],
-        tstX,
-        tstY,
-        multi_class,
+        naive_model, tstX, tstY, multi_class
     )
     under_sample_knn = calculte_models_auc_score(
-        knn_model,
-        df_diff_balancing["under_sample_x"],
-        df_diff_balancing["under_sample_y"],
-        tstX,
-        tstY,
-        multi_class,
+        knn_model_fitted, tstX, tstY, multi_class
     )
     scores["under_sample"] = [under_sample_naive_bayes, under_sample_knn]
 
+    naive_model = naive(
+        df_diff_balancing["over_sample_x"], df_diff_balancing["over_sample_y"]
+    )
+    knn_model_fitted = knn_model(
+        df_diff_balancing["over_sample_x"], df_diff_balancing["over_sample_y"]
+    )
     over_sample_naive_bayes = calculte_models_auc_score(
-        naive,
-        df_diff_balancing["over_sample_x"],
-        df_diff_balancing["over_sample_y"],
-        tstX,
-        tstY,
-        multi_class,
+        naive_model, tstX, tstY, multi_class
     )
     over_sample_knn = calculte_models_auc_score(
-        knn_model,
-        df_diff_balancing["over_sample_x"],
-        df_diff_balancing["over_sample_y"],
-        tstX,
-        tstY,
-        multi_class,
+        knn_model_fitted, tstX, tstY, multi_class
     )
     scores["over_sample"] = [over_sample_naive_bayes, over_sample_knn]
 
-    smote_naive_bayes = calculte_models_auc_score(
-        naive,
-        df_diff_balancing["smote_x"],
-        df_diff_balancing["smote_y"],
-        tstX,
-        tstY,
-        multi_class,
+    naive_model = naive(df_diff_balancing["smote_x"], df_diff_balancing["smote_y"])
+    knn_model_fitted = knn_model(
+        df_diff_balancing["smote_x"], df_diff_balancing["smote_y"]
     )
-    smote_knn = calculte_models_auc_score(
-        knn_model,
-        df_diff_balancing["smote_x"],
-        df_diff_balancing["smote_y"],
-        tstX,
-        tstY,
-        multi_class,
-    )
+    smote_naive_bayes = calculte_models_auc_score(naive_model, tstX, tstY, multi_class)
+    smote_knn = calculte_models_auc_score(knn_model_fitted, tstX, tstY, multi_class)
     scores["smote"] = [smote_naive_bayes, smote_knn]
     best_technique, best_technique_scores = get_best_balancing_score_and_df(scores)
     best_df_x, best_df_y = (
@@ -224,9 +208,9 @@ if __name__ == "__main__":
     best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
         trnX, tstX, trnY, tstY, multi_class=False
     )
-    balance_plots(values)
+    # balance_plots(values)
     print(scores)
-    compare_balanced_scores(scores)
+    # compare_balanced_scores(scores)
 
     data = pd.read_csv("{}/data/covtype.data".format(ROOT_DIR))
     df = data.copy()

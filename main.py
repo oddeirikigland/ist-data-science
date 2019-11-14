@@ -19,7 +19,7 @@ def report(source, dataframe, task):
     if task == "preprocessing":
         return ""
     elif task == "classification":
-        classification_report(data=df, source=source)
+        classification_report(trnX=trnX, tstX=tstX, trnY=trnY, tstY=tstY, source=source)
     elif task == "unsupervised":
         unsupervised_report(data=df, source=source)
     return ""

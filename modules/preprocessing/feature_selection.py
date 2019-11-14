@@ -149,9 +149,8 @@ def get_scores_from_feature_sub_sets(
         trn_x_feature_select = trn_x_df[value].to_numpy()
         tst_x_feature_select = tst_x_df[value].to_numpy()
 
-        score = calculte_models_auc_score(
-            classifier, trn_x_feature_select, trnY, tst_x_feature_select, tstY
-        )
+        model = classifier(trn_x_feature_select, trnY)
+        score = calculte_models_auc_score(model, tst_x_feature_select, tstY)
         feature_sub_set_scores[key] = score
         if score > best_score:
             best_score = score
@@ -175,9 +174,11 @@ def plots_feature_sub_set_scores(feature_sub_set_scores):
     plt.show()
 
 
-def reduce_df_feature_selection(data, y_column_name):
+def reduce_df_feature_selection(data, y_column_name, step_size=10):
     df = data.copy()
-    features_in_sub_sets = find_best_feature_sub_sets(df, y_column_name)
+    features_in_sub_sets = find_best_feature_sub_sets(
+        df, y_column_name, step_size=step_size
+    )
     best_score, best_number_features, best_feature_sets = get_scores_from_feature_sub_sets(
         df, features_in_sub_sets, y_column_name
     )
