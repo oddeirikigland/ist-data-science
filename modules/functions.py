@@ -7,6 +7,8 @@ import json
 import sys
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import LabelBinarizer
+import sklearn.metrics as metrics
+import numpy as np
 
 from constants import ROOT_DIR
 
@@ -161,8 +163,7 @@ def read_from_json(filename):
         sys.exit(1)
 
 
-def calculte_models_auc_score(classifier, trnX, trnY, tstX, tstY, multi_class=False):
-    model = classifier(trnX, trnY)
+def calculte_models_auc_score(model, tstX, tstY, multi_class=False):
     pred_y = model.predict(tstX)
     return (
         multi_class_roc_auc_score(tstY, pred_y)
@@ -188,3 +189,11 @@ def print_table(table):
     )
     for row in table:
         print(row_format.format(*row))
+
+
+def print_confusion_matrix(model, tstX, tstY, labels):
+    cnf_matrix = metrics.confusion_matrix(tstY, model.predict(tstX), labels)
+    total = cnf_matrix.sum(axis=1)[:, np.newaxis]
+    cm = cnf_matrix.astype("float") / total
+    cm = np.around(cm, decimals=2)
+    print_table(cm)
