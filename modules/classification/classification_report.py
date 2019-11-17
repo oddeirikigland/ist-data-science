@@ -8,7 +8,7 @@ from modules.classification.naive_bayes import naive_test_different_params
 from modules.classification.random_forest import rf_test_different_params
 from modules.functions import print_table, print_confusion_matrix
 
-PLOT = True
+PLOT = False
 
 
 def classification_report(trnX, tstX, trnY, tstY, labels, source):
