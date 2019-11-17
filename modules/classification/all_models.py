@@ -44,12 +44,13 @@ def confusion_matrix_model(trnX, tstX, trnY, tstY, labels, prdY):
     plt.tight_layout()
 
 
-def get_accuracy_models(tstX, tstY, nb, knn, dt, rf):
+def get_accuracy_models(tstX, tstY, nb, knn, dt, rf, xg):
     accuracies = {
         "nb": nb.score(tstX, tstY),
         "knn": knn.score(tstX, tstY),
         "dt": dt.score(tstX, tstY),
         "rf": rf.score(tstX, tstY),
+        "xg": xg.score(tstX, tstY),
     }
     return accuracies
 
@@ -70,12 +71,13 @@ def get_confusion_matrix_models(trnX, tstX, trnY, tstY, labels):
     plt.show()
 
 
-def get_sensitivity_models(tstX, tstY, nb, knn, dt, rf, multi_class):
+def get_sensitivity_models(tstX, tstY, nb, knn, dt, rf, xg, multi_class):
     sensitivity = {
         "nb": calculte_models_auc_score(nb, tstX, tstY, multi_class),
         "knn": calculte_models_auc_score(knn, tstX, tstY, multi_class),
         "dt": calculte_models_auc_score(dt, tstX, tstY, multi_class),
         "rf": calculte_models_auc_score(rf, tstX, tstY, multi_class),
+        "xg": calculte_models_auc_score(xg, tstX, tstY, multi_class),
     }
     return sensitivity
 

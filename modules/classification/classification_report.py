@@ -7,6 +7,7 @@ from modules.classification.knn import knn_test_several_params
 from modules.classification.naive_bayes import naive_test_different_params
 from modules.classification.random_forest import rf_test_different_params
 from modules.functions import print_table, print_confusion_matrix
+from modules.classification.xg_boost import xg_boost
 
 PLOT = False
 
@@ -63,18 +64,31 @@ def classification_report(trnX, tstX, trnY, tstY, labels, source):
     print("     b) Confusion matrix:")
     print_confusion_matrix(rf, tstX, tstY, labels)
 
+    print(" 2.5 XG Boost")
+    xg, best_score, best_learning_rate, best_depth, best_estimator = xg_boost(
+        trnX, tstX, trnY, tstY, multi_class, PLOT
+    )
+    print(
+        "     a) Suggested parametrization: {} estimators with {} depth and {} learning rate, which gives an AUC score of {:.2f}".format(
+            best_estimator, best_depth, best_learning_rate, best_score
+        )
+    )
+    print("     b) Confusion matrix:")
+    print_confusion_matrix(xg, tstX, tstY, labels)
+
     print("3. Comparative performance:")
-    accuracies = get_accuracy_models(tstX, tstY, nb, knn, dt, rf)
-    sensitivities = get_sensitivity_models(tstX, tstY, nb, knn, dt, rf, multi_class)
+    accuracies = get_accuracy_models(tstX, tstY, nb, knn, dt, rf, xg)
+    sensitivities = get_sensitivity_models(tstX, tstY, nb, knn, dt, rf, xg, multi_class)
 
     scores_to_print = [
-        ["", "NB", "KNN", "DT", "RF"],
+        ["", "NB", "KNN", "DT", "RF", "XG"],
         [
             "3.1 Accuracy",
             round(accuracies["nb"], 2),
             round(accuracies["knn"], 2),
             round(accuracies["dt"], 2),
             round(accuracies["rf"], 2),
+            round(accuracies["xg"], 2),
         ],
         [
             "3.2 Sensitivity",
@@ -82,6 +96,7 @@ def classification_report(trnX, tstX, trnY, tstY, labels, source):
             round(sensitivities["knn"], 2),
             round(sensitivities["dt"], 2),
             round(sensitivities["rf"], 2),
+            round(sensitivities["xg"], 2),
         ],
     ]
     print_table(scores_to_print)
