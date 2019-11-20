@@ -193,7 +193,4 @@ def print_table(table):
 
 def print_confusion_matrix(model, tstX, tstY, labels):
     cnf_matrix = metrics.confusion_matrix(tstY, model.predict(tstX), labels)
-    total = cnf_matrix.sum(axis=1)[:, np.newaxis]
-    cm = cnf_matrix.astype("float") / total
-    cm = np.around(cm, decimals=2)
-    print_table(cm)
+    print_table(cnf_matrix)
