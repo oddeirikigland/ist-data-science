@@ -10,21 +10,22 @@ def select_variables(df):
     df = df.copy()
     y = df[["class"]]
     df = df.drop(["class"], axis=1)
-    selector = SelectKBest(f_classif, k=10)
+    selector = SelectKBest(f_classif, k=25)
     select_df = selector.fit_transform(df, y)
     mask = selector.get_support()
     new_features = []
     for bool, feature in zip(mask, list(df.columns.values)):
         if bool:
             new_features.append(feature)
+
     return pd.DataFrame(select_df, columns=new_features)
 
 
-def discretize_cut(select_df):
+def discretize_cut(select_df, labels):
     newdf = select_df.copy()
     for col in newdf:
         if col not in ["class", "id", "gender"]:
-            newdf[col] = pd.cut(newdf[col], 5, labels=['low','lowmid','mid','midhigh','high'])
+            newdf[col] = pd.cut(newdf[col], labels.length, labels=labels)
     return newdf
 
 
@@ -32,7 +33,7 @@ def discretize_qcut(select_df):
     newdf = select_df.copy()
     for col in newdf:
         if col not in ["class", "id", "gender"]:
-            newdf[col] = pd.qcut(newdf[col], 5, labels=['low','lowmid','mid','midhigh','high'])
+            newdf[col] = pd.qcut(newdf[col], 8, labels=['low','lowmid','mid','midhigh','high','veryhigh','highest',8])
     return newdf
 
 
@@ -48,7 +49,7 @@ def dummify(df):
 
 def pat_match(dummified_df):
     frequent_itemsets = {}
-    minpaterns = 500
+    minpaterns = 300
     minsup = 1.0
     minconf = 0.9
     while minsup > 0:
@@ -75,7 +76,7 @@ def visualize_patternmatch(dummified_df):
     freqs = list(map.values())
     plt.bar(np.arange(len(freqs)), freqs)
     plt.xticks(np.arange(len(freqs)), keys, rotation="vertical")
-    plt.plot()
+    plt.show()
 
 
 def apriori_cut(df):
@@ -92,10 +93,11 @@ def apriori_qcut(df):
 
 def main():
     df = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
-    reswidth=apriori_cut(df)
     resdepth=apriori_qcut(df)
-    print("Apriori with CUT", apriori_cut(df).to_string)
-    print("Apriori with QCUT", apriori_qcut(df).to_string)
+    print(resdepth)
+    print(visualize_patternmatch(apriori_qcut(df)))
+
+
 
 if __name__ == "__main__":
     main()
