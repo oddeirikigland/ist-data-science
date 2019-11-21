@@ -30,7 +30,18 @@ OGdf = originalDatasett.copy()
 OGcov = originalDatasettCov.copy()
 
 
+def normalize_df(df_nr, columns_not_to_normalize):
+    df_nr = df_nr.copy()
+    df_not_normalize = df_nr[columns_not_to_normalize]
+
+    df_nr = df_nr.drop(columns_not_to_normalize, axis=1)
+    transf = Normalizer().fit(df_nr)
+    df_nr = pd.DataFrame(transf.transform(df_nr, copy=True), columns=df_nr.columns)
+    df_nr = pd.concat([df_not_normalize, df_nr], axis=1)
+    return df_nr
+
 def compute_Importance(X, k):
+    X = normalize_df(X, [])
 
     pca = PCA(svd_solver="auto")
     pca.fit(X)
@@ -70,9 +81,30 @@ def plot_number_of_features(X):
     y = X["class"]
     X = X.drop(["class", "id"], axis=1)
 
+
     for i in range(1, 15):
         data = compute_Importance(X, i)
         kmeans_model = cluster.KMeans(n_clusters=4, random_state=1).fit(data)
+        y_pred = kmeans_model.labels_
+        randscore = metrics.adjusted_rand_score(y, y_pred)
+
+        rand_values.append(randscore)
+        x_values.append(i)
+    plt.plot(x_values, rand_values)
+    plt.ylabel("Rand")
+    plt.xlabel("Number of features")
+    plt.show()
+
+def plot_number_of_features_cov(X):
+    rand_values = []
+    x_values = []
+    y = X["Cover_Type"]
+    X = X.drop(["Cover_Type"], axis=1)
+
+
+    for i in range(1, 15):
+        data = compute_Importance(X, i)
+        kmeans_model = cluster.KMeans(n_clusters=7, random_state=1).fit(data)
         y_pred = kmeans_model.labels_
         randscore = metrics.adjusted_rand_score(y, y_pred)
 
@@ -89,6 +121,7 @@ def kmeans_Cluster_pd(bool, data):
     X = df.groupby(by="id").median().reset_index()
     y = X["class"]
     X = X.drop(["id", "class"], axis=1)
+
 
     # feature selection
     # X_Best = SelectKBest(f_classif, k=10).fit_transform(X, y)
@@ -171,6 +204,7 @@ def kmeans_Cluster_covtype(bool, data):
     X = dfCov
     y = X["Cover_Type"]
     X = X.drop(["Cover_Type"], axis=1)
+
 
     # feature selection
     # X_Best = SelectKBest(f_classif, k=10).fit_transform(X, y)
@@ -258,10 +292,11 @@ def lek():
 def main():
     # compute_Importance()
     # lek()
-    kmeans_Cluster_pd(True, df)
-    plot_number_of_features(df)
+    kmeans_Cluster_pd(True, OGdf)
+    plot_number_of_features(OGdf)
     # DBscan_Cluster()
     kmeans_Cluster_covtype(True, dfCov)
+    plot_number_of_features_cov(dfCov)
     # DBscan_Cluster_Covtype()
 
 
