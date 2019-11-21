@@ -45,7 +45,7 @@ def xg_boost(trnX, tstX, trnY, tstY, multi_class, plot=False):
                     values,
                     "XG Boost with %s depth" % max_depth,
                     "Number of estimators",
-                    "accuracy",
+                    "Sensitivity",
                     percentage=True,
                 )
     if plot:

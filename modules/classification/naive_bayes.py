@@ -43,7 +43,7 @@ def naive_test_different_params(trnX, tstX, trnY, tstY, multi_class=False, plot=
             yvalues,
             "Comparison of Naive Bayes Models",
             "",
-            "accuracy",
+            "Sensitivity",
             percentage=True,
         )
         plt.show()
