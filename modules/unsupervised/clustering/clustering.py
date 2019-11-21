@@ -32,7 +32,7 @@ OGcov = originalDatasettCov.copy()
 
 def compute_Importance(X, k):
 
-    pca = PCA(n_components=10, svd_solver="auto")
+    pca = PCA(svd_solver="auto")
     pca.fit(X)
 
     T = pca.transform(X)
@@ -66,8 +66,9 @@ def compute_Importance(X, k):
 def plot_number_of_features(X):
     rand_values = []
     x_values = []
-    y = X["Cover_Type"]
-    X = X.drop(["Cover_Type"], axis=1)
+    X = df.groupby(by="id").median().reset_index()
+    y = X["class"]
+    X = X.drop(["class", "id"], axis=1)
 
     for i in range(1, 15):
         data = compute_Importance(X, i)
@@ -93,7 +94,7 @@ def kmeans_Cluster_pd(bool, data):
     # X_Best = SelectKBest(f_classif, k=10).fit_transform(X, y)
     # selector = SelectKBest(f_classif, k=10).fit(X, y)
     # features = selector.get_support()
-    X_selected_collums = compute_Importance(X, 10)
+    X_selected_collums = compute_Importance(X, 8)
 
     kmeans_model = cluster.KMeans(n_clusters=4, random_state=1).fit(X_selected_collums)
     y_pred = kmeans_model.labels_
@@ -258,7 +259,7 @@ def main():
     # compute_Importance()
     # lek()
     kmeans_Cluster_pd(True, df)
-    # plot_number_of_features(dfCov)
+    plot_number_of_features(df)
     # DBscan_Cluster()
     kmeans_Cluster_covtype(True, dfCov)
     # DBscan_Cluster_Covtype()
