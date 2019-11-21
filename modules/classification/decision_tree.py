@@ -25,8 +25,8 @@ def dt_plot_accuracy(trnX, tstX, trnY, tstY, multi_class, plot=False):
     best_criteria = ""
     best_score = 0
     best_model = None
-    min_samples_leaf = [0.05, 0.025, 0.01, 0.0075, 0.005, 0.0025, 0.001]
-    max_depths = [5, 10, 25, 50]
+    min_samples_leaf = [.01]
+    max_depths = [10]
     criteria = ["entropy", "gini"]
     if plot:
         plt.figure()
@@ -52,7 +52,7 @@ def dt_plot_accuracy(trnX, tstX, trnY, tstY, multi_class, plot=False):
                     axs[0, k],
                     min_samples_leaf,
                     values,
-                    "Decision Trees with %s criteria" % f,
+                    "%s criteria" % f,
                     "min sample leaf",
                     "Sensitivity",
                     percentage=True,

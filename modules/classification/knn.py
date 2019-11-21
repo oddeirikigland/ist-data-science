@@ -14,7 +14,7 @@ def knn_model(trnX, trnY, n=19, d="manhattan", save_file=False):
 
 
 def knn_test_several_params(trnX, tstX, trnY, tstY, multi_class, plot=False):
-    nvalues = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+    nvalues = [1, 3]
     dist = ["manhattan", "euclidean", "chebyshev"]
     values = {}
     best_n_value = 0

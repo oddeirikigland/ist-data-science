@@ -13,7 +13,7 @@ import numpy as np
 from constants import ROOT_DIR
 
 CMAP = plt.cm.Blues
-plt.rcParams.update({'font.size': 70, 'axes.linewidth': 3})
+plt.rcParams.update({'font.size': 50, 'lines.linewidth': 10})
 
 
 def choose_grid(nr):

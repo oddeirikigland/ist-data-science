@@ -19,8 +19,8 @@ def rf_test_different_params(trnX, tstX, trnY, tstY, multi_class, plot=False):
     best_feature = ""
     best_score = 0
     best_model = None
-    n_estimators = [5, 10, 25, 50, 75, 100, 150, 200, 250, 300]
-    max_depths = [5, 10, 25, 50]
+    n_estimators = [100]
+    max_depths = [10]
     max_features = ["sqrt", "log2"]
 
     if plot:
@@ -47,7 +47,7 @@ def rf_test_different_params(trnX, tstX, trnY, tstY, multi_class, plot=False):
                 axs[0, k],
                 n_estimators,
                 values,
-                "Random Forests with %s features" % f,
+                "RF with %s features" % f,
                 "nr estimators",
                 "Sensitivity",
                 percentage=True,
@@ -55,3 +55,15 @@ def rf_test_different_params(trnX, tstX, trnY, tstY, multi_class, plot=False):
     if plot:
         plt.show()
     return best_model, best_score, best_numb_estimator, best_depth, best_feature
+
+
+if __name__ == '__main__':
+    import pandas as pd
+    from modules.classification.all_models import split_dataset
+    from constants import ROOT_DIR
+
+    data: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
+    df = data.copy()
+    trnX, tstX, trnY, tstY, labels = split_dataset(df)
+    multi_class = False
+    rf_test_different_params(trnX, tstX, trnY, tstY, multi_class, plot=True)

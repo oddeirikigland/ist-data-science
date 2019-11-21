@@ -27,7 +27,7 @@ def preprocessing_report(data, source):
         print(" 1.3 Feature selection")
         # TODO: reduce step size before submit project
         best_score, best_number_features, df = reduce_df_feature_selection(
-            df, y_column_name=target_name, step_size=20
+            df, y_column_name=target_name, step_size=50
         )
         print(
             "   a) Best number of features is {}, with an AUC score of {:.2f}".format(
