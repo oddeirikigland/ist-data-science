@@ -1,15 +1,78 @@
 import time, warnings
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt, math
+from itertools import cycle, islice
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, Normalizer
 from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.cluster import DBSCAN
+from constants import ROOT_DIR
+import pandas as pd
+from sklearn.cluster import MiniBatchKMeans, KMeans
+from sklearn.metrics.pairwise import pairwise_distances_argmin
+from sklearn.datasets.samples_generator import make_blobs
 from sklearn import datasets, metrics, cluster, mixture
 from sklearn.metrics import confusion_matrix
+from sklearn.decomposition import PCA
+originalDatasett : pd.DataFrame = pd.read_csv("{}/data/pd_speech_features.csv".format(ROOT_DIR))
+originalDatasettCov :pd.DataFrame = pd.read_csv("{}/data/covtype.data".format(ROOT_DIR))
+datasetR: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
+dataset_CoverType: pd.DataFrame = pd.read_csv("{}/modules/test_cases/unsupervised_covtype_sample1/input".format(ROOT_DIR))
 
-# datasetR: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
-# dataset_CoverType: pd.DataFrame = pd.read_csv("{}/modules/test_cases/unsupervised_covtype_sample1/input".format(ROOT_DIR))
+dfCov = dataset_CoverType.copy()
+df = datasetR.copy()
+OGdf = originalDatasett.copy()
+OGcov = originalDatasettCov.copy()
 
-# dfCov= dataset_CoverType.copy()
-# df = datasetR.copy()
+def compute_Importance(X,k):
+
+
+    pca = PCA(n_components=10, svd_solver='auto')
+    pca.fit(X)
+
+    T = pca.transform(X)
+
+    # 1 scale principal components
+    xvector = pca.components_[0] * max(T[:, 0])
+    yvector = pca.components_[1] * max(T[:, 1])
+
+    # 2 compute column importance and sort
+    columns = X.columns.values
+    impt_features = {columns[i]: math.sqrt(xvector[i] ** 2 + yvector[i] ** 2) for i in range(len(columns))}
+
+   # print("Features by importance:", sorted(zip(impt_features.values(), impt_features.keys()), reverse=True))
+    sortedList = sorted(zip(impt_features.values(), impt_features.keys()), reverse=True)
+    doneList = sortedList[:k]
+    #print("")
+    features = []
+    for m in range(0,len(doneList)):
+        (value, feature) = doneList[m]
+        features.append(feature)
+    #print(features)
+    X_selected_collums = X.loc[:, features]
+    #print(X_selected_collums)
+
+    return X_selected_collums
+
+def plot_number_of_features(X):
+    rand_values = []
+    x_values = []
+    y = X["Cover_Type"]
+    X = X.drop(["Cover_Type"], axis=1)
+
+    for i in range(1, 15):
+        data =compute_Importance(X,i)
+        kmeans_model = cluster.KMeans(n_clusters=4, random_state=1).fit(data)
+        y_pred = kmeans_model.labels_
+        randscore = metrics.adjusted_rand_score(y, y_pred)
+
+
+        rand_values.append(randscore)
+        x_values.append(i)
+    plt.plot(x_values, rand_values)
+    plt.ylabel("Rand")
+    plt.xlabel("Number of features")
+    plt.show()
 
 
 def kmeans_Cluster_pd(bool, data):
@@ -19,10 +82,12 @@ def kmeans_Cluster_pd(bool, data):
     X = X.drop(["id", "class"], axis=1)
 
     # feature selection
-    X_Best = SelectKBest(f_classif, k=10).fit_transform(X, y)
-    selector = SelectKBest(f_classif, k=10).fit(X, y)
-    features = selector.get_support()
-    X_selected_collums = X.loc[:, features]
+    #X_Best = SelectKBest(f_classif, k=10).fit_transform(X, y)
+    #selector = SelectKBest(f_classif, k=10).fit(X, y)
+    #features = selector.get_support()
+    X_selected_collums = compute_Importance(X, 10)
+
+
 
     kmeans_model = cluster.KMeans(n_clusters=4, random_state=1).fit(X_selected_collums)
     y_pred = kmeans_model.labels_
@@ -157,9 +222,11 @@ def DBscan_Cluster_Covtype(data):
 
     # feature selection
     # X_Best = SelectKBest(f_classif, k=10).fit_transform(X, y)
-    selector = SelectKBest(f_classif, k=10).fit(X, y)
-    features = selector.get_support()
-    X_selected_collums = X.loc[:, features]
+    # selector = SelectKBest(f_classif, k=10).fit(X, y)
+    # features = selector.get_support()
+    # X_selected_collums = X.loc[:, features]
+
+    X_selected_collums = compute_Importance(X, 10)
 
     dbscan_model = cluster.DBSCAN(eps=1, min_samples=10).fit(X_selected_collums)
     y_pred = dbscan_model.labels_
@@ -180,10 +247,12 @@ def lek():
 
 
 def main():
-    lek()
-    # kmeans_Cluster(False, )
+    #compute_Importance()
+    #lek()
+    kmeans_Cluster_pd(True, df)
+    # plot_number_of_features(dfCov)
     # DBscan_Cluster()
-    # kmeans_Cluster_covtype(False, 3)
+    kmeans_Cluster_covtype(True, dfCov)
     # DBscan_Cluster_Covtype()
 
 
