@@ -13,6 +13,7 @@ import numpy as np
 from constants import ROOT_DIR
 
 CMAP = plt.cm.Blues
+plt.rcParams.update({'font.size': 70, 'axes.linewidth': 3})
 
 
 def choose_grid(nr):
@@ -191,6 +192,20 @@ def print_table(table):
         print(row_format.format(*row))
 
 
-def print_confusion_matrix(model, tstX, tstY, labels):
-    cnf_matrix = metrics.confusion_matrix(tstY, model.predict(tstX), labels)
+def print_confusion_matrix(model, tstX, tstY, labels, plot=False):
+    prd_y = model.predict(tstX)
+    cnf_matrix = metrics.confusion_matrix(tstY, prd_y, labels)
     print_table(cnf_matrix)
+    if plot:
+        confusion_matrix_model(tstY, labels, prd_y, cnf_matrix)
+
+
+def confusion_matrix_model(tstY, labels, prdY, cnf_mtx):
+    plt.figure()
+    fig, axs = plt.subplots(1, 2, figsize=(8, 4), squeeze=False)
+    plot_confusion_matrix(axs[0, 0], cnf_mtx, labels)
+    plot_confusion_matrix(
+        axs[0, 1], metrics.confusion_matrix(tstY, prdY, labels), labels, normalize=True
+    )
+    plt.tight_layout()
+    plt.show()

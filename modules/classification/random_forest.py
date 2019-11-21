@@ -49,7 +49,7 @@ def rf_test_different_params(trnX, tstX, trnY, tstY, multi_class, plot=False):
                 values,
                 "Random Forests with %s features" % f,
                 "nr estimators",
-                "accuracy",
+                "Sensitivity",
                 percentage=True,
             )
     if plot:

@@ -51,7 +51,7 @@ def get_sample_df(
     return output_df
 
 
-def balancing_training_dataset(trnX, trnY):
+def balancing_training_dataset(trnX, trnY, print_stuff):
     unbal = pd.DataFrame.from_records(trnX)
     unbal["Outcome"] = trnY
     target_count = unbal["Outcome"].value_counts()
@@ -63,13 +63,14 @@ def balancing_training_dataset(trnX, trnY):
     min_class = min(y_values, key=y_values.get)
     max_class = max(y_values, key=y_values.get)
 
-    print(
-        "Minority class: {} with {} values".format(min_class, target_count[min_class])
-    )
-    print(
-        "Majority class: {} with {} values".format(max_class, target_count[max_class])
-    )
-    print("Proportion:", round(y_values[min_class] / y_values[max_class], 2), ": 1")
+    if print_stuff:
+        print(
+            "Minority class: {} with {} values".format(min_class, target_count[min_class])
+        )
+        print(
+            "Majority class: {} with {} values".format(max_class, target_count[max_class])
+        )
+        print("Proportion:", round(y_values[min_class] / y_values[max_class], 2), ": 1")
 
     values = {"Original": y_values}
     df_under_sample = unbal[unbal["Outcome"] == min_class]
@@ -127,9 +128,9 @@ def balancing_training_dataset(trnX, trnY):
     return (df_diff_balancing, values)
 
 
-def finds_best_data_set_balance(trnX, tstX, trnY, tstY, multi_class):
+def finds_best_data_set_balance(trnX, tstX, trnY, tstY, multi_class, print_stuff=True):
     scores = {}
-    df_diff_balancing, values = balancing_training_dataset(trnX, trnY)
+    df_diff_balancing, values = balancing_training_dataset(trnX, trnY, print_stuff)
 
     naive_model = naive(trnX, trnY)
     knn_model_fitted = knn_model(trnX, trnY)
@@ -181,7 +182,8 @@ def finds_best_data_set_balance(trnX, tstX, trnY, tstY, multi_class):
         df_diff_balancing["{}_x".format(best_technique)],
         df_diff_balancing["{}_y".format(best_technique)],
     )
-    print_performance_table(scores)
+    if print_stuff:
+        print_performance_table(scores)
     return best_technique, best_technique_scores, scores, values, best_df_x, best_df_y
 
 

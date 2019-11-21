@@ -36,7 +36,7 @@ def knn_test_several_params(trnX, tstX, trnY, tstY, multi_class, plot=False):
     if plot:
         plt.figure()
         multiple_line_chart(
-            plt.gca(), nvalues, values, "KNN variants", "n", "accuracy", percentage=True
+            plt.gca(), nvalues, values, "KNN variants", "n", "Sensitivty", percentage=True
         )
         plt.show()
     return best_model, best_score, best_dist, best_n_value

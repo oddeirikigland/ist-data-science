@@ -54,7 +54,7 @@ def dt_plot_accuracy(trnX, tstX, trnY, tstY, multi_class, plot=False):
                     values,
                     "Decision Trees with %s criteria" % f,
                     "min sample leaf",
-                    "accuracy",
+                    "Sensitivity",
                     percentage=True,
                 )
     if plot:
