@@ -9,19 +9,19 @@ PLOT = False
 def unsupervised_report(data, source):
     df=data.copy()
 
-    print("1. Applies Pattern Mining & Rules Assosiation:")
+    print("2.1 Applies Pattern Mining & Rules Assosiation:")
     if source == "PD":
-        print("K=35, Min_patterns=300, Discretization with qcut with bins=6")
+        print("K=35, Min_patterns=300, Discretization with qcut with bins=7")
         patternmining_pd(df)
 
     elif source == "CT":
-        print("K=25, Min_patterns=300, Discretization with cut with bins=4")
+        print("K=10, Min_patterns=300, Discretization with cut with bins=8")
         patternmining_ct(df)
 
 
 
     print("")
-    print("Clustering 4.2")
+    print("2.2 Clustering")
     if source == "PD":
         kmeans_Cluster_pd(PLOT, data)
     if source == "CT":
