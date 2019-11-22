@@ -11,11 +11,13 @@ from modules.functions import (
     write_to_json,
     read_from_json,
     bar_chart,
+    line_chart,
     calculte_models_auc_score,
 )
 from modules.classification.all_models import split_dataset
 from modules.classification.naive_bayes import naive
 from modules.classification.knn import knn_model
+from modules.classification.decision_tree import decision_tree
 
 
 def cor_selector(X, y, num_feats, feature_name):
@@ -162,10 +164,10 @@ def get_scores_from_feature_sub_sets(
 
 def plots_feature_sub_set_scores(feature_sub_set_scores):
     plt.figure()
-    bar_chart(
+    line_chart(
         ax=plt.gca(),
-        xvalues=feature_sub_set_scores.keys(),
-        yvalues=feature_sub_set_scores.values(),
+        xvalues=list(feature_sub_set_scores.keys()),
+        yvalues=list(feature_sub_set_scores.values()),
         title="AUC score based on number of features used",
         xlabel="Number of features",
         ylabel="AUC score",
@@ -186,10 +188,10 @@ def reduce_df_feature_selection(data, y_column_name, step_size=10):
 
 
 if __name__ == "__main__":
-    data: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
+    data: pd.DataFrame = pd.read_csv("{}/data/covtype.data".format(ROOT_DIR))
 
     find_best_feature_sub_sets(
-        data, y_column_name="class", step_size=1, verbose=True, save_to_file=True
+        data, y_column_name="Cover_Type", step_size=10, verbose=True, save_to_file=True
     )
 
     feature_sets = read_from_json("feature_sets")

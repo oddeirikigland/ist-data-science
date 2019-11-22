@@ -21,19 +21,20 @@ def choose_grid(nr):
 
 
 def line_chart(
-    ax: plt.Axes,
-    series: pd.Series,
-    title: str,
-    xlabel: str,
-    ylabel: str,
-    percentage=False,
+        ax: plt.Axes,
+        xvalues: list,
+        yvalues: list,
+        title: str,
+        xlabel: str,
+        ylabel: str,
+        percentage=False,
 ):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if percentage:
         ax.set_ylim(0.0, 1.0)
-    ax.plot(series)
+    ax.plot(xvalues, yvalues)
 
 
 def multiple_line_chart(

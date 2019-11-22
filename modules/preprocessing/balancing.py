@@ -204,16 +204,19 @@ if __name__ == "__main__":
     from constants import ROOT_DIR
     from modules.classification.all_models import split_dataset
 
-    data = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
+    """
+    data = pd.read_csv("{}/data/pd_speech_features1.csv".format(ROOT_DIR))
     df = data.copy()
+    target_count = df["class"].value_counts()
     trnX, tstX, trnY, tstY, labels = split_dataset(df, y_column_name="class")
     best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
         trnX, tstX, trnY, tstY, multi_class=False
     )
-    # balance_plots(values)
+    balance_plots(values)
     print(scores)
-    # compare_balanced_scores(scores)
+    compare_balanced_scores(scores)
 
+    """
     data = pd.read_csv("{}/data/covtype.data".format(ROOT_DIR))
     df = data.copy()
     trnX, tstX, trnY, tstY, labels = split_dataset(df, y_column_name="Cover_Type")
