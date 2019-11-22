@@ -10,9 +10,9 @@ def xg_boost(trnX, tstX, trnY, tstY, multi_class, plot=False):
     best_learning_rate = 0
     best_depth = 0
     best_estimator = 0
-    learning_rates = [0.1, 0.05, 0.01]
-    max_depths = [5, 25]
-    n_estimators = [10, 50, 100, 200, 300, 400, 500]
+    learning_rates = [0.1]
+    max_depths = [5]
+    n_estimators = [10]
     if plot:
         plt.figure()
         fig, axs = plt.subplots(1, len(max_depths), figsize=(16, 4), squeeze=False)

@@ -15,19 +15,6 @@ from sklearn import datasets, metrics, cluster, mixture
 from sklearn.metrics import confusion_matrix
 from sklearn.decomposition import PCA
 
-originalDatasett: pd.DataFrame = pd.read_csv(
-    "{}/data/pd_speech_features.csv".format(ROOT_DIR)
-)
-originalDatasettCov: pd.DataFrame = pd.read_csv("{}/data/covtype.data".format(ROOT_DIR))
-datasetR: pd.DataFrame = pd.read_csv("{}/data/df_without_corr.csv".format(ROOT_DIR))
-dataset_CoverType: pd.DataFrame = pd.read_csv(
-    "{}/modules/test_cases/unsupervised_covtype_sample1/input".format(ROOT_DIR)
-)
-
-dfCov = dataset_CoverType.copy()
-df = datasetR.copy()
-OGdf = originalDatasett.copy()
-OGcov = originalDatasettCov.copy()
 
 
 def normalize_df(df_nr, columns_not_to_normalize):
@@ -117,10 +104,9 @@ def plot_number_of_features_cov(X):
 
 
 def kmeans_Cluster_pd(bool, data):
-    df = data.copy()
-    X = df.groupby(by="id").median().reset_index()
+    X = data.copy()
     y = X["class"]
-    X = X.drop(["id", "class"], axis=1)
+    X = X.drop(["class"], axis=1)
 
 
     # feature selection
@@ -175,10 +161,9 @@ def kmeans_Cluster_pd(bool, data):
 
 
 def DBscan_Cluster_pd(data):
-    df = data.copy()
-    X = df.groupby(by="id").median().reset_index()
+    X = data.copy()
     y = X["class"]
-    X = X.drop(["id", "class"], axis=1)
+    X = X.drop(["class"], axis=1)
 
     # feature selection
     X_Best = SelectKBest(f_classif, k=10).fit_transform(X, y)
@@ -217,7 +202,7 @@ def kmeans_Cluster_covtype(bool, data):
     kmeans_model = cluster.KMeans(n_clusters=7, random_state=1).fit(X_selected_collums)
     y_pred = kmeans_model.labels_
 
-    matrix = confusion_matrix(y_pred, y)
+    matrix = confusion_matrix(y_pred, y.values)
 
     # print( y_pred)legge til connfution matrix
     print("Kmeans:")
@@ -287,18 +272,3 @@ def DBscan_Cluster_Covtype(data):
 def lek():
     noe = 0
     print(noe)
-
-
-def main():
-    # compute_Importance()
-    # lek()
-    kmeans_Cluster_pd(True, OGdf)
-    plot_number_of_features(OGdf)
-    # DBscan_Cluster()
-    kmeans_Cluster_covtype(True, dfCov)
-    plot_number_of_features_cov(dfCov)
-    # DBscan_Cluster_Covtype()
-
-
-if __name__ == "__main__":
-    main()

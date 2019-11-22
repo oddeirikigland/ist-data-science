@@ -49,11 +49,11 @@ def preprocessing_report(data, source):
         for train_index, test_index in kf.split(X):
             trnX, tstX = X[train_index], X[test_index]
             trnY, tstY = y[train_index], y[test_index]
-            best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
-                trnX, tstX, trnY, tstY, multi_class=False, print_stuff=False
-            )
-            trnX = best_df_x.copy()
-            trnY = best_df_y.copy()
+            #best_technique, best_technique_scores, scores, values, best_df_x, best_df_y = finds_best_data_set_balance(
+            #    trnX, tstX, trnY, tstY, multi_class=False, print_stuff=False
+            #)
+            #trnX = best_df_x.copy()
+            #trnY = best_df_y.copy()
             fold.append([trnX, tstX, trnY, tstY])
 
         trnX, tstX, trnY, tstY, labels = split_dataset(df)
@@ -67,6 +67,7 @@ def preprocessing_report(data, source):
 
     else:
         print(" 1.1 Normalization")
+        df[["Cover_Type"]] = df[["Cover_Type"]].apply(pd.to_numeric)
         df = normalize_df(df, columns_not_to_normalize=["Cover_Type"])
         print("Normalization completed")
 
